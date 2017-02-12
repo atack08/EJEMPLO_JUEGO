@@ -21,18 +21,22 @@ public class Sprite {
         this.vistaJuego = vistJ;
         this.bmp = bmp;
 
-        //COORDENADAS INICIALES
-        //CENTRAMOS HORIZONTAL
-        x = 500;
-
     }
 
     public void moverDerecha(){
-        xSpeed = 5;
+
+        if(xSpeed < 0)
+            xSpeed = 0;
+        else
+            xSpeed = 5;
     }
 
     public void moverIzqda(){
-        xSpeed = -5;
+
+        if(xSpeed > 0)
+            xSpeed = 0;
+        else
+            xSpeed = -5;
     }
 
     private void update(){
@@ -48,11 +52,26 @@ public class Sprite {
         }
 
         x = x + xSpeed;
+        vistaJuego.setAnchoSpriteJugador(x);
     }
 
     public void onDraw (Canvas canvas){
         update();
-        canvas.drawBitmap(bmp,x,1200,null);
+        canvas.drawBitmap(bmp,x,y,null);
+    }
+
+    public void fijarCoordenadasIniciales(int w, int h){
+
+        setHeight(h);
+        setWidth(w);
+
+        x = (w/2) - (bmp.getWidth()/2);
+        y =  h - 450;
+
+        vistaJuego.setAltoSpriteJugador(y);
+
+        System.out.println("ANCHO INICIAL = " + x);
+        System.out.println("ALTO INICIAL = " + y);
     }
 
     public void setWidth(int width) {
