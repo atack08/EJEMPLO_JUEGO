@@ -150,24 +150,8 @@ public class VistaJuego extends SurfaceView{
         canvas.drawBitmap(botonIzqda,10,canvas.getHeight() - botonIzqda.getHeight(),null);
         canvas.drawBitmap(botonDerecha,10 + botonDerecha.getWidth(),canvas.getHeight() - botonDerecha.getHeight() ,null);
 
-        ArrayList<SpriteLaser> listaBorrado = new ArrayList<>();
 
-
-        synchronized (listaST) {
-            if (!listaST.isEmpty()) {
-                for (SpriteLaser spl : listaST) {
-
-                    if (spl.isMostrar())
-                        spl.onDraw(canvas);
-                    else
-                        listaBorrado.add(spl);
-                }
-
-            }
-
-            listaST.removeAll(listaBorrado);
-
-        }
+        manipularListaLaser(0,canvas);
 
         sprite.onDraw(canvas);
 
@@ -177,7 +161,7 @@ public class VistaJuego extends SurfaceView{
 
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public synchronized boolean onTouchEvent(MotionEvent event) {
 
         float x2 =  event.getX();
         float y2 =  event.getY();
@@ -200,7 +184,7 @@ public class VistaJuego extends SurfaceView{
                 && y2 >= getHeight() - botonFuego.getHeight() ){
             System.out.println("HAS TOCADO EN BOTON FUEGO");
 
-            listaST.add(new SpriteLaser(this,laser,anchoSpriteJugador + (bmp.getWidth()/2),altoSpriteJugador));
+            manipularListaLaser(1,null);
             System.out.println("DISPARO REALIZADO");
 
             SonidoDisparo sd = new SonidoDisparo();
@@ -212,6 +196,30 @@ public class VistaJuego extends SurfaceView{
 
         return super.onTouchEvent(event);
     }
+
+
+    public synchronized void manipularListaLaser(int tipo, Canvas canvas){
+
+        if(tipo == 0){
+            ArrayList<SpriteLaser> listaBorrado = new ArrayList<>();
+
+            if (!listaST.isEmpty()) {
+                for (SpriteLaser spl : listaST) {
+
+                    if (spl.isMostrar())
+                        spl.onDraw(canvas);
+                    else
+                        listaBorrado.add(spl);
+                }
+
+            }
+            listaST.removeAll(listaBorrado);
+        }
+        else
+            listaST.add(new SpriteLaser(this,laser,anchoSpriteJugador + (bmp.getWidth()/2),altoSpriteJugador));
+
+    }
+
 
     public class SonidoDisparo extends AsyncTask {
 
