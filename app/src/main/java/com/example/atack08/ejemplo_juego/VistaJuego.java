@@ -30,7 +30,6 @@ public class VistaJuego extends SurfaceView{
     private SurfaceHolder holder;
     private Context context;
 
-
     //Coordenada x
     //Coordenada y
     private int x;
@@ -144,24 +143,30 @@ public class VistaJuego extends SurfaceView{
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        //FONDO IMGAEN SPACIO
-        canvas.drawBitmap(fondo,0,0,null);
+        canvas.drawBitmap(fondo, 0, 0, null);
 
         //PINTAMOS BOTONES
         canvas.drawBitmap(botonFuego,this.getWidth() - botonFuego.getWidth(),this.getHeight() - botonFuego.getHeight(),null);
         canvas.drawBitmap(botonIzqda,10,canvas.getHeight() - botonIzqda.getHeight(),null);
         canvas.drawBitmap(botonDerecha,10 + botonDerecha.getWidth(),canvas.getHeight() - botonDerecha.getHeight() ,null);
 
-        ArrayList<Integer> listaBorrado = new ArrayList<>();
+        ArrayList<SpriteLaser> listaBorrado = new ArrayList<>();
 
-        if(!listaST.isEmpty()) {
-            for (SpriteLaser spl : listaST) {
 
-                if (spl.isMostrar())
-                    spl.onDraw(canvas);
-                else
-                    listaBorrado.add(listaST.indexOf(spl));
+        synchronized (listaST) {
+            if (!listaST.isEmpty()) {
+                for (SpriteLaser spl : listaST) {
+
+                    if (spl.isMostrar())
+                        spl.onDraw(canvas);
+                    else
+                        listaBorrado.add(spl);
+                }
+
             }
+
+            listaST.removeAll(listaBorrado);
+
         }
 
         sprite.onDraw(canvas);
@@ -196,6 +201,7 @@ public class VistaJuego extends SurfaceView{
             System.out.println("HAS TOCADO EN BOTON FUEGO");
 
             listaST.add(new SpriteLaser(this,laser,anchoSpriteJugador + (bmp.getWidth()/2),altoSpriteJugador));
+            System.out.println("DISPARO REALIZADO");
 
             SonidoDisparo sd = new SonidoDisparo();
             sd.execute();
